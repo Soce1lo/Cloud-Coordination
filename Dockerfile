@@ -2,7 +2,7 @@ FROM ubuntu:latest
 LABEL authors="bihaoran"
 
 # 使用官方的Python基础镜像
-FROM python:3.10-slim-buster
+FROM python:3.9-slim-buster
 
 # 设置工作目录
 WORKDIR /app
