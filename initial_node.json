@@ -1,7 +1,1 @@
-{
-    "network_status": "1",
-    "task_type": "1",
-    "load": 0.0,
-    "node_id": "node_1",
-    "update_method": "0"
-}
+{"id": 1, "is_leader": false, "network_status": 0.23, "task_type": "1", "load": 0.43, "node_id": "node_1", "update_method": "0"}

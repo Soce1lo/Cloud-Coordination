@@ -7,14 +7,23 @@ class Node(db.Model):
 
     # 节点ID
     id = db.Column(db.Integer, primary_key=True)
-    # 网络状态
-    network_status = db.Column(db.String(80), nullable=False)
+
+    # 是否是领导者 bool类型
+    is_leader = db.Column(db.Boolean, nullable=True)
+
+    # 网络状态 float类型 0-1
+    network_status = db.Column(db.Float, nullable=False)
+
     # 任务类型
     task_type = db.Column(db.String(80), nullable=False)
+
     # 负载
+    # 计算状态 存储状态 etc
     load = db.Column(db.Float, nullable=False)
+
     # 节点ID
     node_id = db.Column(db.String(80), unique=True, nullable=False)
+
     # 更新方式
     update_method = db.Column(db.String(80), nullable=False)
 
@@ -22,6 +31,7 @@ class Node(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            'is_leader': self.is_leader,
             'network_status': self.network_status,
             'task_type': self.task_type,
             'load': self.load,

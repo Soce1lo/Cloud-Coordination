@@ -1,5 +1,5 @@
 import json
-from flask import Flask
+from flask import Flask, jsonify, request
 
 from master_election.election import election_blueprint
 from task_scheduling.scheduler import scheduler_blueprint
@@ -24,6 +24,7 @@ app.register_blueprint(distribution_blueprint, url_prefix='/distribution')
 app.register_blueprint(sync_blueprint, url_prefix='/sync')
 app.register_blueprint(network_blueprint, url_prefix='/network')
 
+
 # 从config.py文件中读取配置信息
 # app.config.from_object(Config)
 def create_or_get_node():
@@ -35,6 +36,7 @@ def create_or_get_node():
             with open('initial_node.json', 'r') as file:
                 data = json.load(file)
                 node = Node(
+                    is_leader=data['is_leader'],
                     network_status=data['network_status'],
                     task_type=data['task_type'],
                     load=data['load'],
@@ -46,6 +48,45 @@ def create_or_get_node():
         else:  # 如果存在，则更新json文件
             with open('initial_node.json', 'w') as file:
                 json.dump(node.to_dict(), file)
+
+
+@app.route('/')
+def hello_world():
+    return 'Hello!'
+
+
+def update_node_properties(update_data):
+    node = Node.query.first()
+    if node:
+        for key, value in update_data.items():
+            if hasattr(node, key):
+                setattr(node, key, value)
+        db.session.commit()
+        return True
+    return False
+
+
+# 动态修改节点属性
+@app.route('/update_node', methods=['POST'])
+def update_node():
+    data = request.json
+    success = update_node_properties(data)
+    if success:
+        return jsonify({"message": "Node updated successfully"}), 200
+    else:
+        return jsonify({"error": "Node not found"}), 404
+
+
+# 注册路由接口为get_node
+@app.route('/get_node', methods=['GET'])
+def get_node():
+    print("接到请求")
+    node = Node.query.first()
+    if node:
+        return jsonify(node.to_dict()), 200
+    else:
+        return jsonify({"error": "Node not found"}), 404
+
 
 if __name__ == "__main__":
     create_or_get_node()

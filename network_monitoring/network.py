@@ -31,6 +31,3 @@ def update():
     db.session.commit()
 
     return jsonify({"message": "Update success"}), 200
-
-    # 保存到数据库
-    db.session.commit()
