@@ -1,6 +1,6 @@
 import json
 from flask import Flask, jsonify, request
-
+from config import Config, setup_logging
 from master_election.election import election_blueprint
 from task_scheduling.scheduler import scheduler_blueprint
 from task_distribution.distribution import distribution_blueprint
@@ -11,9 +11,10 @@ from network_monitoring.network import network_blueprint
 from models import db, Node
 
 app = Flask(__name__)
+# 设置日志
+logger = setup_logging()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///node_data.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
 db.init_app(app)
 
@@ -52,6 +53,8 @@ def create_or_get_node():
 
 @app.route('/')
 def hello_world():
+    logger.info("logger test")
+    # app.logger.info("app logger test")
     return 'Hello!'
 
 

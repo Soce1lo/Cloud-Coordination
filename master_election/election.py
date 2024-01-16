@@ -1,11 +1,13 @@
+import logging
+import socket
+
 import requests
 from flask import Blueprint
 from models import db, Node
 
-
 election_blueprint = Blueprint('election', __name__)
 
-
+logger = logging.getLogger('my_logger')
 @election_blueprint.route('/')
 # 开始进行任务
 def start():
@@ -13,13 +15,15 @@ def start():
     # 请求其他节点的状态信息
     # 向多个ip发送请求，获取响应
     # 选取网络状态最好的节点作为主节点
-    print("接收到任务请求")
+    logger.info("接收到任务请求")
     # 向127.0.0.1:5000/election/vote发送选举请求
     # requests.get('http://127.0.0.1:5079/election/vote')
-    requests.get('http://172.16.238.12:5078/election/vote')
-    print("发送选举")
-    node = Node.query.first()
+    # requests.get('http://172.16.238.12:5078/election/vote')
 
+
+    logger.info("发送选举")
+
+    node = Node.query.first()
     data = {
         'is_leader': node.is_leader,
         'network_status': node.network_status,
@@ -29,8 +33,13 @@ def start():
         'update_method': node.update_method
     }
 
-    return "Start response"
+    return get_container_ip()
 
+
+def get_container_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
 
 @election_blueprint.route('/vote', methods=['GET', 'POST'])

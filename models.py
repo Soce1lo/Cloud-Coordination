@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class Node(db.Model):
     __tablename__ = 'nodes'
 
@@ -22,11 +23,10 @@ class Node(db.Model):
     load = db.Column(db.Float, nullable=False)
 
     # 节点ID
-    node_id = db.Column(db.String(80), unique=True, nullable=False)
+    node_id = db.Column(db.Integer, unique=True, nullable=False)
 
     # 更新方式
     update_method = db.Column(db.String(80), nullable=False)
-
 
     def to_dict(self):
         return {
@@ -38,4 +38,3 @@ class Node(db.Model):
             'node_id': self.node_id,
             'update_method': self.update_method
         }
-
