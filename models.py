@@ -38,3 +38,22 @@ class Node(db.Model):
             'node_id': self.node_id,
             'update_method': self.update_method
         }
+
+
+class Node_state(db.Model):
+    __tablename__ = 'node_state'
+    # 节点ID 主键
+    id = db.Column(db.Integer, primary_key=True)
+
+    # 网络状态 float类型 0-1
+    network_status = db.Column(db.Float, nullable=False)
+
+    # 任务类型
+    task_type = db.Column(db.String(80), nullable=False)
+
+    # 负载
+    # 计算状态 存储状态 etc
+    load = db.Column(db.Float, nullable=False)
+
+    # 更新方式
+    update_method = db.Column(db.String(80), nullable=False)
