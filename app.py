@@ -31,7 +31,6 @@ app.register_blueprint(network_blueprint, url_prefix='/network')
 def create_or_get_node():
     with app.app_context():
         db.create_all()  # 创建表
-
         node = Node.query.first()  # 获取第一个 Node 记录
         if node is None:  # 如果不存在，则创建一个
             with open('initial_node.json', 'r') as file:
@@ -49,6 +48,7 @@ def create_or_get_node():
         else:  # 如果存在，则更新json文件
             with open('initial_node.json', 'w') as file:
                 json.dump(node.to_dict(), file)
+    logger.info("数据库更新完成")
 
 
 @app.route('/')
@@ -83,7 +83,7 @@ def update_node():
 # 注册路由接口为get_node
 @app.route('/get_node', methods=['GET'])
 def get_node():
-    print("接到请求")
+    logger.info("收到get_node请求")
     node = Node.query.first()
     if node:
         return jsonify(node.to_dict()), 200
