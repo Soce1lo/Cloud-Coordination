@@ -1,7 +1,7 @@
 import logging
 import socket
-
 import requests
+
 from flask import Blueprint
 from models import db, Node, Node_state
 
@@ -10,23 +10,21 @@ election_blueprint = Blueprint('election', __name__)
 logger = logging.getLogger('my_logger')
 
 
-@election_blueprint.route('/')
 # 开始进行任务
+@election_blueprint.route('/')
 def start():
     # TODO 实现开始任务逻辑
     # 请求其他节点的状态信息
     # 向多个ip发送请求，获取响应
     # 选取网络状态最好的节点作为主节点
     logger.info("接收到任务请求")
-    # 向127.0.0.1:5000/election/vote发送选举请求
-    # requests.get('http://127.0.0.1:5079/election/vote')
-    # requests.get('http://172.16.238.12:5078/election/vote')
     election()
 
     return "Start"
 
 
 def election():
+    # 请求另外两个节点，更新一下目前的状态信息
     # 访问get_node 接口 获取json数据
     response = requests.get('http://172.16.238.11:5078/get_node')
     response = response.json()
@@ -50,12 +48,10 @@ def election():
     else:
         # 指定网络状态最小的节点为主节点
         logger.info("指定Node %d 为主节点", min_network_status_node.id)
+    # TODO 将任务告知被选举的主节点，通知对方开始协调任务
+    # 此处逻辑还未真正实现，只是简单的向主节点发送了一个请求
+    requests.get("http://172.16.238.10:5078/task_start")
 
-
-def train():
-    # TODO 实现训练逻辑
-
-    return "Train"
 
 def update_node_state(response):
     # 将json数据保存到数据库 node_state表中

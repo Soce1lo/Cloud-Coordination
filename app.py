@@ -1,4 +1,8 @@
 import json
+import threading
+import time
+
+import requests
 from flask import Flask, jsonify, request
 from config import Config, setup_logging
 from master_election.election import election_blueprint
@@ -90,6 +94,34 @@ def get_node():
     else:
         return jsonify({"error": "Node not found"}), 404
 
+
+@app.route('/task_start', methods=['GET'])
+def task_start():
+    logger.info("开始主持训练任务")
+    requests.get("http://172.16.238.11:5078/train")
+    logger.info("向节点 %d 发送训练任务", 2)
+    requests.get("http://172.16.238.12:5078/train")
+    logger.info("向节点 %d 发送训练任务", 3)
+    return jsonify({"message": "task started"}), 200
+
+@app.route('/train', methods=['GET'])
+def train():
+    node = Node.query.first()
+    logger.info("Node %d 开始训练", node.id)
+    # 启动一个线程，模拟训练任务,并传递节点地址
+    thread = threading.Thread(target=train_task, args=("http://172.16.238.10:5078/task_update", node.node_id, 3))
+    thread.start()
+    return jsonify({"message": "train started"}), 200
+
+def train_task(address, id,epoche):
+    for i in range(epoche):
+        time.sleep(5)
+        requests.get(address, json={"node_id": id})
+
+@app.route('/task_update', methods=['GET'])
+def task_update():
+    logger.info("接收到来自节点 %d 的训练结果", request.json['node_id'])
+    return jsonify({"message": "task updated"}), 200
 
 if __name__ == "__main__":
     create_or_get_node()

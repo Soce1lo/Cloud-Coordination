@@ -57,3 +57,22 @@ class Node_state(db.Model):
 
     # 更新方式
     update_method = db.Column(db.String(80), nullable=False)
+
+
+class ip_address(db.Model):
+    __tablename__ = 'ip_address'
+    # 节点ID 主键
+    id = db.Column(db.Integer, primary_key=True)
+
+    # ip地址
+    ip = db.Column(db.String(80), nullable=False)
+
+    # 端口号
+    port = db.Column(db.Integer, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ip': self.ip,
+            'port': self.port,
+        }
